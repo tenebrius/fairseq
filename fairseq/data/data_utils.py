@@ -20,6 +20,7 @@ import torch
 
 from fairseq.file_io import PathManager
 from fairseq import utils
+from fairseq.data import inline_case
 import os
 
 logger = logging.getLogger(__name__)
@@ -370,9 +371,10 @@ def batch_by_size(
         fixed_shapes_sorted = fixed_shapes[sort_order]
         return batch_fixed_shapes_fast(indices, num_tokens_fn, fixed_shapes_sorted)
 
-
 def post_process(sentence: str, symbol: str):
-    if symbol == "sentencepiece":
+    if symbol == "inline_case":
+        sentence = inline_case.do_detok(sentence.replace(" ", "").replace("\u2581", " ").strip())
+    elif symbol == "sentencepiece":
         sentence = sentence.replace(" ", "").replace("\u2581", " ").strip()
     elif symbol == "wordpiece":
         sentence = sentence.replace(" ", "").replace("_", " ").strip()
